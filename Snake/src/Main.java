@@ -9,7 +9,7 @@ public class Main {
         frame.setSize(widthAndHeight, widthAndHeight);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);       // close app on closing the window
         frame.setResizable(false);                                  // frame can't be resized, blocks the yellow button
-        frame.setLocationRelativeTo(null);                          // frame appears in the middle of screen?
+        frame.setLocationRelativeTo(null);
 
         MyPanel gamePanel = new MyPanel(widthAndHeight, tileSize);
         frame.add(gamePanel);
