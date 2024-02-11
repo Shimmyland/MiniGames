@@ -19,7 +19,6 @@ public class RockPaperScissors {
             try {
                 System.out.print("Choose Rock (0), Paper (1) or Scissors (2): ");
                 int input = scanner.nextInt();
-                int input2 = scanner.nextInt();
 
                 if (input < 0 || input > 2) { // wrong input number
                     System.out.println("Wrong input, try it again please. Type a number between 0 and 2.");
