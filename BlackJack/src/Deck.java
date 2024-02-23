@@ -3,18 +3,20 @@ import java.util.List;
 import java.util.Random;
 
 public class Deck {
+    // fields
     private List<Card> deck;
     private int cardsInDeck;
     private List<Card> discardPile;
+
 
     // constructor
     public Deck() {
         this.deck = new ArrayList<>();
         int index = 2;
-        int counts = 0; // four special cards - A, J, Q, K
+        int counts = 0; //  face cards - A, J, Q, K
         // String[] cards = {"A", "2","3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
-        String[] typesOfCard = {"C", "D", "H", "S"};    // four types of cards
-        for (String s : typesOfCard) {
+        String[] suitsOfCards = {"C", "D", "H", "S"};
+        for (String s : suitsOfCards) {
             while (true) {
                 if (index > 10) {
                     if (counts == 0) {
@@ -42,17 +44,33 @@ public class Deck {
         this.discardPile = new ArrayList<>();
     }
 
-    // getter
+
+    // setters and getter
     public List<Card> getDeck() {
         return deck;
+    }
+    public void setDeck(List<Card> deck) {
+        this.deck = deck;
+    }
+    public int getCardsInDeck() {
+        return cardsInDeck;
+    }
+    public void setCardsInDeck(int cardsInDeck) {
+        this.cardsInDeck = cardsInDeck;
+    }
+    public List<Card> getDiscardPile() {
+        return discardPile;
+    }
+    public void setDiscardPile(List<Card> discardPile) {
+        this.discardPile = discardPile;
     }
 
 
     // class methods
-    public void shuffle(){
+    public void shuffle() {
         Random random = new Random();
-        for (int i=0; i < deck.size(); i++){
-            if (deck.get(i) == null){
+        for (int i = 0; i < deck.size(); i++) {
+            if (deck.get(i) == null) {
                 continue;
             }
             Card currentCard = deck.get(i);
@@ -74,6 +92,21 @@ public class Deck {
         return null;    // deck is empty
     }
 
+    public void discardHand(List<Card> cards) {
+        discardPile.addAll(cards);
+        cardsInDeck -= discardPile.size();
+    }
 
-
+    public void returnCardsIntoDeck(){
+        for (Card card : discardPile){
+            for (Card position : deck){
+                if (position == null){
+                    position.setValue(card.getValue());
+                    position.setSuit(card.getSuit());
+                    break;
+                }
+            }
+        }
+        discardPile.clear();
+    }
 }

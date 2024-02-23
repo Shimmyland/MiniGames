@@ -3,9 +3,12 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
+        // start a game
+        Game game = new Game();
+
         do {
-            // start a game
-            Game game = new Game();
+            // set up the game
+            game.newGame();
 
             // distribution of cards
             game.distribution();
@@ -20,29 +23,11 @@ public class Main {
             game.winner();
 
             // prepare the next game
+            game.prepare();
 
             // play again
-        } while (playAgain());
+        } while (game.playAgain());
     }
 
-    public static boolean playAgain(){
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Do you want to play again?(y/n)");
-        String answer = scanner.next().toLowerCase();
-
-        while (true) {
-            if (Character.isDigit(answer.charAt(0))) {
-                System.out.println("Wrong input, try again.");
-            } else {
-                if (answer.equals("y")) {
-                    return true;
-                } else if (answer.equals("n")) {
-                    return false;
-                } else {
-                    System.out.println("Wrong input, try again.");
-                }
-            }
-        }
-    }
 
 }
