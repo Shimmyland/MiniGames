@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Person {
-    private List<Card> hand;        // ArrayList?
+    private List<Card> hand;
 
     // constructor
     public Person() {
@@ -13,6 +13,7 @@ public abstract class Person {
     public List<Card> getHand() {
         return this.hand;
     }
+
     public void setHand(List<Card> hand) {
         this.hand = hand;
     }
@@ -24,5 +25,6 @@ public abstract class Person {
     }
 
     public abstract void showHand();
+
     public abstract int showScore();
 }

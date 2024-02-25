@@ -1,14 +1,11 @@
-import java.util.Scanner;
-
 public class Main {
     public static void main(String[] args) {
 
         // start a game
+        // set up the game
         Game game = new Game();
 
         do {
-            // set up the game
-            game.newGame();
 
             // distribution of cards
             game.distribution();
@@ -16,14 +13,17 @@ public class Main {
             // show hand
             game.showHands();
 
-            // action
-            game.action();
+            // "auto win" for player
+            if (!game.getPlayer().autoWin()){
+                // action
+                game.action();
 
-            // win condition
-            game.winner();
+                // win condition
+                game.winner();
 
-            // prepare the next game
-            game.prepare();
+                // prepare the next game
+                game.prepareForNewGame();
+            }
 
             // play again
         } while (game.playAgain());

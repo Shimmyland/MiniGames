@@ -12,15 +12,13 @@ public class Card {
         this.suit = type;
     }
 
-    // getters
+    // getters and setters
     public String getValue() {
         return value;
     }
     public String getSuit() {
         return suit;
     }
-
-    // setters
     public void setValue(String value) {
         this.value = value;
     }

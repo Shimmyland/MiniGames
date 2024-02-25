@@ -12,10 +12,11 @@ public class Dealer extends Person {
         this.holeCard = false;
     }
 
-    // setter and getter
+    // getter and setter
     public boolean isHoleCard() {
         return holeCard;
     }
+
     public void setHoleCard(boolean holeCard) {
         this.holeCard = holeCard;
     }
@@ -24,54 +25,53 @@ public class Dealer extends Person {
     // method for the Dealer
     @Override
     public void showHand() {
-        System.out.print("Dealer has an ");
+        StringBuilder message = new StringBuilder("Dealer has an ");
+        HashMap<String, String> faceCards = new HashMap<>();
+        faceCards.put("J", "a Jack");
+        faceCards.put("Q", "a Queen");
+        faceCards.put("K", "a King");
+        faceCards.put("A", "an Ace");
+
         for (int i = 0; i < getHand().size(); i++) {
-
-            HashMap<String, String> faceCards = new HashMap<>();
-            faceCards.put("J", "a Jack");
-            faceCards.put("Q", "a Queen");
-            faceCards.put("K", "a King");
-            faceCards.put("A", "an Ace");
-
             // Check for face or value card
             if (faceCards.containsKey(getHand().get(i).getValue())) {
-                System.out.print(faceCards.get(getHand().get(i).getValue()));
+                message.append(faceCards.get(getHand().get(i).getValue()));
             } else {
                 if (getHand().get(i).getValue().equals("8")) {
-                    System.out.print("an ");
+                    message.append("an ");
                 } else {
-                    System.out.print("a ");
+                    message.append("a ");
                 }
-                System.out.print(getHand().get(i).getValue());
+                message.append(getHand().get(i).getValue());
             }
-
-            System.out.print(" of ");
 
             // suits
             switch (getHand().get(i).getSuit()) {
                 case "C":
-                    System.out.print("Clubs");
+                    message.append(" of Clubs");
                     break;
                 case "D":
-                    System.out.print("Diamonds");
+                    message.append(" of Diamonds");
                     break;
                 case "H":
-                    System.out.print("Hearts");
+                    message.append(" of Hearts");
                     break;
                 default:
-                    System.out.print("Spades");
+                    message.append(" of Spades");
                     break;
             }
 
             // show only 1st cards
             if (!holeCard) {
+                message.append(" (and a hidden card)");
                 break;
             } else {
                 if (i < getHand().size() - 1) {
-                    System.out.print(i == getHand().size() - 2 ? " and " : ", ");       // ternary conditional operator
+                    message.append(i == getHand().size() - 2 ? " and " : ", ");         // ternary conditional operator
                 }
             }
         }
+        System.out.println(message + ", with a total of " + showScore());
     }
 
     @Override
@@ -128,13 +128,11 @@ public class Dealer extends Person {
         while (true) {
             if (showScore() < 17) {
                 receiveACard(deck.getCard());
-                System.out.println();
                 System.out.println("Dealer's score is too low, he draws a card..");
                 showHand();
             } else {
                 break;
             }
         }
-        System.out.print(", with a total of " + showScore());
     }
 }

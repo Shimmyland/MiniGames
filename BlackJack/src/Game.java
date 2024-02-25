@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Game {
@@ -15,14 +17,34 @@ public class Game {
         deck.shuffle();
     }
 
-    public void newGame(){
-        this.player = new Player();
-        this.dealer = new Dealer();
-        this.deck = new Deck();
 
-        deck.shuffle();
+    // getters and setters
+    public Player getPlayer() {
+        return player;
     }
 
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public Dealer getDealer() {
+        return dealer;
+    }
+
+    public void setDealer(Dealer dealer) {
+        this.dealer = dealer;
+    }
+
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public void setDeck(Deck deck) {
+        this.deck = deck;
+    }
+
+
+    // class methods
     // distribution of cards method
     public void distribution() {
         for (int i = 0; i < 2; i++) {
@@ -34,14 +56,7 @@ public class Game {
 
     public void showHands() {
         player.showHand();
-        System.out.print(", with a total of " + player.showScore());
-        System.out.println();
-        if (player.autoWin()){      // solve it! - have to break game loop -> make it boolean! make a condition in main
-            return;
-        }
-
         dealer.showHand();
-        System.out.print(", with a total of " + dealer.showScore());
         System.out.println();
     }
 
@@ -60,7 +75,7 @@ public class Game {
         }
         System.out.print("Player's move: ");
 
-        label:
+
         while (true) {
             Scanner scanner = new Scanner(System.in);
             String answer = scanner.next().toUpperCase();
@@ -70,10 +85,29 @@ public class Game {
             } else {
                 switch (answer) {
                     case "H":
-                        player.receiveACard(deck.getCard());
-                        player.showHand();
-                        System.out.print(", with a total of " + player.showScore());
-                        System.out.println();
+                        if (!player.getSplitHand().isEmpty()){
+                            while (true){
+                                System.out.print("Do you want to draw a card for your main Hand?(y/n)");
+                                Scanner drawCardForBothHands = new Scanner(System.in);
+                                if (Character.isDigit(answer.charAt(0))) {
+                                    System.out.println("Wrong input, try again.");
+                                } else {
+                                    if (drawCardForBothHands.equals("y")) {
+                                        player.receiveACard(deck.getCard());
+                                        player.showHand();
+                                        break;
+                                    } else if (drawCardForBothHands.equals("n")) {
+                                        player.receiveACardSplit(deck.getCard());
+                                        break;
+                                    } else {
+                                        System.out.println("Wrong input, try again.");
+                                    }
+                                }
+                            }
+                        } else {
+                            player.receiveACard(deck.getCard());
+                            player.showHand();
+                        }
                         if (player.showScore() > 21) {
                             return;
                         }
@@ -81,14 +115,20 @@ public class Game {
                         return;
                     case "S":
                         // nothing
-                        break label;
+                        return;
                     case "D":
                         player.receiveACard(deck.getCard());
                         // incorporate bidding!
-                        break label;
+                        break;
                     case "P":
-                        // ?!
-                        break label;
+                        // rewrite it
+                        List<Card> tmp = player.getHand();
+                        player.receiveACardSplit(player.getHand().get(1));
+                        player.setHand(new ArrayList<>());
+                        player.receiveACard(tmp.get(0));
+                        player.receiveACard(deck.getCard());
+                        player.receiveACardSplit(deck.getCard());
+                        break;
                     default:
                         System.out.println("Wrong answer, try again.");
                         break;
@@ -100,20 +140,36 @@ public class Game {
 
     // Win conditions
     public void winner() {
+        if (player.showScore() > 21) {
+            System.out.println("Your score is higher then 21, dealer wins.");
+            return;
+        }
+
         dealer.setHoleCard(true);
         dealer.showHand();
         dealer.lessThen17(deck);    // Check dealer's hand
 
         System.out.println();
-        if (player.showScore() <= 21 && player.showScore() > dealer.showScore()) {
+        if (player.showScore() <= 21 && player.showScore() > dealer.showScore() && dealer.showScore() > 21) {
             System.out.println("Player wins");
-        } else if (player.showScore() == dealer.showScore()) {
-            System.out.println("Dealer wins");
         } else {
             System.out.println("Dealer wins");
         }
     }
 
+
+    // prepare for next game
+    public void prepareForNewGame() {
+        player.setHand(new ArrayList<>());
+        dealer.setHand(new ArrayList<>());
+        System.out.println("cards in deck after - " + deck.getCardsInDeck());
+        dealer.setHoleCard(false);
+        if (deck.getCardsInDeck() < 31) {  // 52 / 100 * 60 -> 31-32 cards (less than 60% available)
+            this.deck = new Deck();
+            System.out.println("shuffling..");
+            deck.shuffle();
+        }
+    }
 
     public boolean playAgain() {
         Scanner scanner = new Scanner(System.in);
@@ -133,19 +189,5 @@ public class Game {
                 }
             }
         }
-    }
-
-
-    // prepare for next game
-    public void prepare(){
-        deck.discardHand(player.getHand());
-        player.setHand(null);
-        deck.discardHand(dealer.getHand());
-        dealer.setHand(null);
-        dealer.setHoleCard(false);
-        if (deck.getCardsInDeck() < 31){  // 52 / 100 * 60 -> 31-32 cards (less than 60% available)
-            deck.returnCardsIntoDeck();
-        }
-        deck.shuffle();
     }
 }
