@@ -1,11 +1,12 @@
 public class Main {
     public static void main(String[] args) {
 
-        // start a game
-        // set up the game
+        // start and set up the game
         Game game = new Game();
 
         do {
+            // place a bet
+            game.getPlayer().placeABet();
 
             // distribution of cards
             game.distribution();
@@ -14,16 +15,19 @@ public class Main {
             game.showHands();
 
             // "auto win" for player
-            if (!game.getPlayer().autoWin()){
+            if (!game.getPlayer().hasBlackJack()){
                 // action
                 game.action();
 
                 // win condition
                 game.winner();
 
-                // prepare the next game
-                game.prepareForNewGame();
+            } else {
+                System.out.println();
+                System.out.println("You have a BlackJack!");
             }
+            // prepare the next game
+            game.prepareForNewGame();
 
             // play again
         } while (game.playAgain());

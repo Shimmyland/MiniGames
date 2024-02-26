@@ -45,7 +45,6 @@ public class Game {
 
 
     // class methods
-    // distribution of cards method
     public void distribution() {
         for (int i = 0; i < 2; i++) {
             player.receiveACard(deck.getCard());
@@ -53,63 +52,65 @@ public class Game {
         }
     }
 
-
     public void showHands() {
         player.showHand();
         dealer.showHand();
-        System.out.println();
     }
 
-
     public void action() {
+        List<String> options = new ArrayList<>();
+        options.add("H");
+        options.add("S");
         System.out.println();
-        System.out.println("Would you like to:");
+        System.out.println("Action:");
         System.out.println("'Hit' (H): Take an additional card from the dealer.");
         System.out.println("'Stand' (S): Decline any additional cards and keep the current hand.");
-        if (player.getHand().size() <= 2) {
-            System.out.println("'Double Down' (D): Double the initial bet and receive exactly one more card. This option is often available only on the first two cards.");
+        if (player.getHand().size() == 2 || player.getSplitHand().size() == 2) {    // available only on the first two cards
+            System.out.println("'Double Down' (D): Double the initial bet and receive exactly one more card.");
+            options.add("D");
         }
-        if (player.getHand().stream().map(Card::getValue).distinct().count() == 1) {     // find out, if the cards are same by "distinct"
+        if (player.getHand().stream().map(Card::getValue).distinct().count() == 1 || player.getSplitHand().stream().map(Card::getValue).distinct().count() == 1) {     // find out, if the cards are same by "distinct"
             System.out.println("'Split' (P): If the first two cards have the same value (e.g., two 8s), the player can split them into two separate hands, each with its own bet. " +
                     "Additional cards are dealt to each new hand. Some variations may have restrictions on which pairs can be split.");
+            options.add("P");
         }
-        System.out.print("Player's move: ");
-
 
         while (true) {
+            System.out.print("Player's move: ");
             Scanner scanner = new Scanner(System.in);
             String answer = scanner.next().toUpperCase();
-            System.out.println();
-            if (Character.isDigit(answer.charAt(0))) {
-                System.out.println("Wrong input, try again.");
+            if (!options.contains(answer)) {
+                System.out.println("Wrong input or the chosen option is not available, please try again.");
             } else {
                 switch (answer) {
                     case "H":
-                        if (!player.getSplitHand().isEmpty()){
-                            while (true){
-                                System.out.print("Do you want to draw a card for your main Hand?(y/n)");
-                                Scanner drawCardForBothHands = new Scanner(System.in);
-                                if (Character.isDigit(answer.charAt(0))) {
-                                    System.out.println("Wrong input, try again.");
-                                } else {
-                                    if (drawCardForBothHands.equals("y")) {
+                        if (!player.getSplitHand().isEmpty()) {
+                            while (true) {
+                                System.out.print("Draw a card: Hand (a), split Hand (b), both of them (c).");
+                                String drawCardForBothHands = scanner.next();
+                                switch (drawCardForBothHands) {
+                                    case "a":
                                         player.receiveACard(deck.getCard());
-                                        player.showHand();
                                         break;
-                                    } else if (drawCardForBothHands.equals("n")) {
+                                    case "b":
                                         player.receiveACardSplit(deck.getCard());
                                         break;
-                                    } else {
+                                    case "c":
+                                        player.receiveACard(deck.getCard());
+                                        player.receiveACardSplit(deck.getCard());
+                                        break;
+                                    default:
                                         System.out.println("Wrong input, try again.");
-                                    }
+                                        break;
                                 }
+                                break;
                             }
                         } else {
                             player.receiveACard(deck.getCard());
                             player.showHand();
-                        }
-                        if (player.showScore() > 21) {
-                            return;
+                            if (player.showScore() > 21) {
+                                return;
+                            }
                         }
                         action();
                         return;
@@ -118,20 +119,15 @@ public class Game {
                         return;
                     case "D":
                         player.receiveACard(deck.getCard());
-                        // incorporate bidding!
-                        break;
+                        // incorporate bidding!, if you split you can then double
+                        return;
                     case "P":
-                        // rewrite it
-                        List<Card> tmp = player.getHand();
                         player.receiveACardSplit(player.getHand().get(1));
-                        player.setHand(new ArrayList<>());
-                        player.receiveACard(tmp.get(0));
-                        player.receiveACard(deck.getCard());
+                        player.getHand().set(1, deck.getCard());
                         player.receiveACardSplit(deck.getCard());
+                        player.showHand();
                         break;
-                    default:
-                        System.out.println("Wrong answer, try again.");
-                        break;
+                    // default: not needed, condition will take care of all inputs
                 }
             }
         }
@@ -140,20 +136,45 @@ public class Game {
 
     // Win conditions
     public void winner() {
-        if (player.showScore() > 21) {
-            System.out.println("Your score is higher then 21, dealer wins.");
-            return;
+        System.out.println();
+
+        if (!player.getSplitHand().isEmpty()) {
+            if (player.showScore() > 21) {
+                System.out.println("Your score in your Hand is higher then 21, dealer wins.");
+            }
+            if (player.showSplitScore() > 21) {
+                System.out.println("Your score in your Split Hand is higher then 21, dealer wins.");
+            }
+        } else {
+            if (player.showScore() > 21) {
+                System.out.println("Your score is higher then 21, dealer wins.");
+                player.setMoneyAccount(player.getMoneyAccount() - player.getBet());
+                return;
+            }
         }
 
         dealer.setHoleCard(true);
         dealer.showHand();
         dealer.lessThen17(deck);    // Check dealer's hand
-
         System.out.println();
-        if (player.showScore() <= 21 && player.showScore() > dealer.showScore() && dealer.showScore() > 21) {
+
+        if (!player.getSplitHand().isEmpty()) {
+            if (player.showSplitScore() <= 21 && player.showSplitScore() > dealer.showScore() || dealer.showScore() > 21) {
+                System.out.println("Player wins with Split Hand.");
+            } else {
+                System.out.println("Dealer wins over Player's Split Hand.");
+            }
+        }
+
+        if (player.showScore() <= 21 && player.showScore() > dealer.showScore() || dealer.showScore() > 21) {
             System.out.println("Player wins");
+            player.setMoneyAccount(player.getMoneyAccount() + player.getBet());
+        } else if (player.showScore() == dealer.showScore()) {
+            System.out.println("It's draw!");
         } else {
             System.out.println("Dealer wins");
+            player.setMoneyAccount(player.getMoneyAccount() - player.getBet());
+
         }
     }
 
@@ -161,8 +182,11 @@ public class Game {
     // prepare for next game
     public void prepareForNewGame() {
         player.setHand(new ArrayList<>());
+        player.setBet(0);
+        if (!player.getSplitHand().isEmpty()) {
+            player.setSplitHand(new ArrayList<>());
+        }
         dealer.setHand(new ArrayList<>());
-        System.out.println("cards in deck after - " + deck.getCardsInDeck());
         dealer.setHoleCard(false);
         if (deck.getCardsInDeck() < 31) {  // 52 / 100 * 60 -> 31-32 cards (less than 60% available)
             this.deck = new Deck();
@@ -171,22 +195,20 @@ public class Game {
         }
     }
 
+
     public boolean playAgain() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Do you want to play again?(y/n)");
 
         while (true) {
             String answer = scanner.next().toLowerCase();
-            if (Character.isDigit(answer.charAt(0))) {
-                System.out.println("Wrong input, try again.");
+            if (answer.equals("y")) {
+                System.out.println();
+                return true;
+            } else if (answer.equals("n")) {
+                return false;
             } else {
-                if (answer.equals("y")) {
-                    return true;
-                } else if (answer.equals("n")) {
-                    return false;
-                } else {
-                    System.out.println("Wrong input, try again.");
-                }
+                System.out.println("Wrong input, try again.");
             }
         }
     }

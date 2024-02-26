@@ -2,9 +2,9 @@ import java.util.HashMap;
 
 public class Dealer extends Person {
 
+    // fields
     private boolean holeCard;   // known as the 2nd card, if true = able to print
 
-    // create a bank?
 
     // constructor
     public Dealer() {
@@ -128,7 +128,7 @@ public class Dealer extends Person {
         while (true) {
             if (showScore() < 17) {
                 receiveACard(deck.getCard());
-                System.out.println("Dealer's score is too low, he draws a card..");
+                System.out.println("Dealer's score is too low, he has to draw a card..");
                 showHand();
             } else {
                 break;
