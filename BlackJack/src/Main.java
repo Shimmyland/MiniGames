@@ -11,10 +11,10 @@ public class Main {
             // distribution of cards
             game.distribution();
 
-            // show hand
+            // show hands
             game.showHands();
 
-            // "auto win" for player
+            // "auto win" for player if he has a BlackJack
             if (!game.getPlayer().hasBlackJack()){
                 // action
                 game.action();
@@ -26,12 +26,10 @@ public class Main {
                 System.out.println();
                 System.out.println("You have a BlackJack!");
             }
-            // prepare the next game
+            // prepare for the next game
             game.prepareForNewGame();
 
             // play again
         } while (game.playAgain());
     }
-
-
 }

@@ -7,12 +7,14 @@ public class Game {
     private Player player;
     private Dealer dealer;
     private Deck deck;
+    private BasicStrategy basicStrategy;
 
     // constructor
     public Game() {
         this.player = new Player();
         this.dealer = new Dealer();
         this.deck = new Deck();
+        this.basicStrategy = new BasicStrategy();
 
         deck.shuffle();
     }
@@ -41,6 +43,14 @@ public class Game {
 
     public void setDeck(Deck deck) {
         this.deck = deck;
+    }
+
+    public BasicStrategy getBasicStrategy() {
+        return basicStrategy;
+    }
+
+    public void setBasicStrategy(BasicStrategy basicStrategy) {
+        this.basicStrategy = basicStrategy;
     }
 
 
@@ -74,6 +84,8 @@ public class Game {
                     "Additional cards are dealt to each new hand. Some variations may have restrictions on which pairs can be split.");
             options.add("P");
         }
+
+        basicStrategy.getAdvice(player, dealer);
 
         while (true) {
             System.out.print("Player's move: ");

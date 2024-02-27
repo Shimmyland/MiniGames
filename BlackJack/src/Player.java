@@ -83,7 +83,7 @@ public class Player extends Person {
                     break;
             }
 
-            //
+            // conjunction
             if (i < getHand().size() - 1) {
                 if (i < getHand().size() - 2) {
                     message.append(", ");
