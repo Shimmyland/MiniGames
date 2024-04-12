@@ -10,7 +10,7 @@ This folder contains simple exercises I created while learning Java. It includes
 [GuessTheNumber](https://github.com/Shimmyland/MiniGames/blob/main/OneClassGames/src/GuessTheNumber.java), 
 [RockPaperScissors](https://github.com/Shimmyland/MiniGames/blob/main/OneClassGames/src/RockPaperScissors.java), 
 [TicTacToe](https://github.com/Shimmyland/MiniGames/blob/main/OneClassGames/src/TicTacToe.java). 
-All of them are focused on practicing creating methods, using conditinal statements and take inputs and souting outputs in console.
+All of them are focused on practicing creating methods, using conditinal statements and inputs and souting outputs in console.
 
 ### [Snake](https://github.com/Shimmyland/MiniGames/tree/main/Snake)
 In this exercise, I modified and extended [Kenny Yip's Snake code](https://github.com/ImKennyYip/snake-java). 
